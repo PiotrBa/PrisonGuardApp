@@ -16,4 +16,6 @@ public interface GuardService {
     PrisonerDTO getPrisonerById(Long id);
     VisitorDTO getVisitorById(Long id);
     void assignPrisonerToVisitor(AssignRequest request);
+    List<VisitorDTO> getVisitorsByPrisonerId(Long prisonerId);
 }
+
