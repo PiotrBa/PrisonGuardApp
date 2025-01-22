@@ -120,4 +120,21 @@ public class GuardServiceImpl implements GuardService {
         visitorClient.updateVisitor(request.getVisitorId(), visitor);
         logger.info("Prisoner with ID {} assigned to visitor with ID {}", request.getPrisonerId(), request.getVisitorId());
     }
+
+    @Override
+    public List<VisitorDTO> getVisitorsByPrisonerId(Long prisonerId) {
+        logger.info("Fetching visitors assigned to prisoner with ID: {}", prisonerId);
+        List<VisitorDTO> assignedVisitors = visitorClient.getAllVisitors()
+                .stream()
+                .filter(visitor -> visitor.getPrisonerIdNumber() != null && visitor.getPrisonerIdNumber().equals(prisonerId))
+                .toList();
+        if (assignedVisitors.isEmpty()) {
+            logger.error("No visitors found for prisoner with ID: {}", prisonerId);
+            throw new IllegalArgumentException("No visitors found for prisoner with ID " + prisonerId);
+        }
+        logger.info("Found {} visitors assigned to prisoner with ID: {}", assignedVisitors.size(), prisonerId);
+        return assignedVisitors;
+    }
+
+
 }
