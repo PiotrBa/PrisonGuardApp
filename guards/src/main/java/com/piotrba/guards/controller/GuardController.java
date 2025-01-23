@@ -1,6 +1,7 @@
 package com.piotrba.guards.controller;
 
 import com.piotrba.guards.dto.AssignRequest;
+import com.piotrba.guards.dto.visitor.VisitorDTO;
 import com.piotrba.guards.entity.Guard;
 import com.piotrba.guards.exeptionHandler.GuardNotFoundException;
 import com.piotrba.guards.service.GuardService;
@@ -57,5 +58,11 @@ public class GuardController {
                 request.getPrisonerId(), request.getVisitorId());
         guardService.assignPrisonerToVisitor(request);
         return "Prisoner assigned to visitor successfully.";
+    }
+
+    @GetMapping("/prisoner/{id}/visitors")
+    public List<VisitorDTO> getVisitorsByPrisonerId(@PathVariable Long id) {
+        logger.info("Fetching visitors for prisoner with ID: {}", id);
+        return guardService.getVisitorsByPrisonerId(id);
     }
 }
