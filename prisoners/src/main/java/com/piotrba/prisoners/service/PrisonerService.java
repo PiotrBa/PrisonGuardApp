@@ -1,15 +1,65 @@
 package com.piotrba.prisoners.service;
 
 import com.piotrba.prisoners.entity.Prisoner;
+import com.piotrba.prisoners.repo.PrisonersRepository;
+import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface PrisonerService {
+@Service
+@AllArgsConstructor
+public class PrisonerService {
 
-    List<Prisoner> findAll();
-    Optional<Prisoner> findById(Long id);
-    Prisoner updatePrisoner (Long id, Prisoner prisoner);
-    void deletePrisoner(Long id);
-    Prisoner addPrisoner(Prisoner prisoner);
+    private static final Logger logger = LoggerFactory.getLogger(PrisonerService.class);
+
+    private final PrisonersRepository prisonersRepository;
+
+    public List<Prisoner> findAll() {
+        logger.info("Fetching all prisoners");
+        return prisonersRepository.findAll();
+    }
+
+    public Optional<Prisoner> findById(Long id) {
+        logger.info("Fetching prisoner by ID: {}", id);
+        return prisonersRepository.findById(id);
+    }
+
+    @Transactional
+    public Prisoner updatePrisoner(Long id, Prisoner newPrisoner) {
+        logger.info("Updating prisoner with ID: {}", id);
+        Optional<Prisoner> existingPrisonerOptional = prisonersRepository.findById(id);
+        if (existingPrisonerOptional.isEmpty()) {
+            logger.error("Prisoner with ID {} does not exist", id);
+            throw new IllegalArgumentException("Prisoner does not exist");
+        }
+        Prisoner existingPrisoner = existingPrisonerOptional.get();
+        existingPrisoner.setFirstName(newPrisoner.getFirstName());
+        existingPrisoner.setLastName(newPrisoner.getLastName());
+        existingPrisoner.setIncarcerationDate(newPrisoner.getIncarcerationDate());
+        existingPrisoner.setImprisonmentEndDate(newPrisoner.getImprisonmentEndDate());
+        existingPrisoner.setImprisonmentRigour(newPrisoner.getImprisonmentRigour());
+        existingPrisoner.setAddress(newPrisoner.getAddress());
+        logger.info("Prisoner updated successfully: {}", existingPrisoner);
+        return existingPrisoner;
+    }
+
+    @Transactional
+    public void deletePrisoner(Long id) {
+        logger.info("Deleting prisoner with ID: {}", id);
+        prisonersRepository.deleteById(id);
+        logger.info("Prisoner with ID {} deleted successfully", id);
+    }
+
+    @Transactional
+    public Prisoner addPrisoner(Prisoner prisoner) {
+        logger.info("Adding new prisoner: {}", prisoner);
+        Prisoner savedPrisoner = prisonersRepository.save(prisoner);
+        logger.info("Prisoner added successfully: {}", savedPrisoner);
+        return savedPrisoner;
+    }
 }
