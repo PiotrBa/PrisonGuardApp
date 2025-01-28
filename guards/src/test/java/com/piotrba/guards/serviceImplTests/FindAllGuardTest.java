@@ -3,7 +3,7 @@ package com.piotrba.guards.serviceImplTests;
 import com.piotrba.guards.entity.Address;
 import com.piotrba.guards.entity.Guard;
 import com.piotrba.guards.repo.GuardsRepository;
-import com.piotrba.guards.service.impl.GuardServiceImpl;
+import com.piotrba.guards.service.GuardService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +23,7 @@ public class FindAllGuardTest {
     private GuardsRepository guardsRepository;
 
     @InjectMocks
-    private GuardServiceImpl guardService;
+    private GuardService guardService;
 
 
     List<Guard> guardsList = List.of(
