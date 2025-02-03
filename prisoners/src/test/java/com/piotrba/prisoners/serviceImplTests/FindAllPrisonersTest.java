@@ -4,7 +4,7 @@ import com.piotrba.prisoners.entity.Address;
 import com.piotrba.prisoners.entity.ImprisonmentRigour;
 import com.piotrba.prisoners.entity.Prisoner;
 import com.piotrba.prisoners.repo.PrisonersRepository;
-import com.piotrba.prisoners.service.serviceImpl.PrisonerServiceImpl;
+import com.piotrba.prisoners.service.PrisonerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,7 +26,7 @@ public class FindAllPrisonersTest {
     private PrisonersRepository prisonersRepository;
 
     @InjectMocks
-    private PrisonerServiceImpl prisonerServiceImpl;
+    private PrisonerService prisonerService;
 
     List<Prisoner> prisonerList = new ArrayList<>(Arrays.asList(
             new Prisoner(1L, "John", "Doe", LocalDateTime.now(), LocalDateTime.now().plusYears(5), ImprisonmentRigour.MAXIMUM_SECURITY, new Address("123 Main St", "12345", "Springfield")),
@@ -36,14 +36,14 @@ public class FindAllPrisonersTest {
     @Test
     public void findAllPrisoners_whenPrisonerExist_shouldReturnPrisonerList () {
         when(prisonersRepository.findAll()).thenReturn(prisonerList);
-        List<Prisoner> result = prisonerServiceImpl.findAll();
+        List<Prisoner> result = prisonerService.findAll();
         assertEquals(prisonerList, result);
     }
 
     @Test
     public void findAllPrisoners_whenPrisonerDoNotExist_shouldReturnEmptyList() {
         when(prisonersRepository.findAll()).thenReturn(new ArrayList<>());
-        List<Prisoner> result = prisonerServiceImpl.findAll();
+        List<Prisoner> result = prisonerService.findAll();
         assertTrue(result.isEmpty());
     }
 }
