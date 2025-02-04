@@ -2,7 +2,7 @@ package com.piotrba.prisoners.serviceImplTests;
 
 import com.piotrba.prisoners.entity.Prisoner;
 import com.piotrba.prisoners.repo.PrisonersRepository;
-import com.piotrba.prisoners.service.serviceImpl.PrisonerServiceImpl;
+import com.piotrba.prisoners.service.PrisonerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +21,7 @@ public class FindPrisonerByIdTest {
     @Mock
     private PrisonersRepository prisonersRepository;
     @InjectMocks
-    private PrisonerServiceImpl prisonerService;
+    private PrisonerService prisonerService;
 
     public Prisoner prisoner = Prisoner.builder()
         .id(1L)
