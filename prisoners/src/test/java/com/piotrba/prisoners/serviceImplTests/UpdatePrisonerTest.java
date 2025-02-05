@@ -4,7 +4,7 @@ import com.piotrba.prisoners.entity.Address;
 import com.piotrba.prisoners.entity.ImprisonmentRigour;
 import com.piotrba.prisoners.entity.Prisoner;
 import com.piotrba.prisoners.repo.PrisonersRepository;
-import com.piotrba.prisoners.service.serviceImpl.PrisonerServiceImpl;
+import com.piotrba.prisoners.service.PrisonerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,13 +24,13 @@ public class UpdatePrisonerTest {
     private PrisonersRepository prisonersRepository;
 
     @InjectMocks
-    private PrisonerServiceImpl prisonerService;
+    private PrisonerService prisonerService;
     Prisoner prisoner = Prisoner.builder()
             .id(1L)
             .firstName("John")
             .lastName("Doe")
             .incarcerationDate(LocalDateTime.now())
-            .imprisonmentEndTime(LocalDateTime.now().plusYears(5))
+            .imprisonmentEndDate(LocalDateTime.now().plusYears(5))
             .imprisonmentRigour(ImprisonmentRigour.MAXIMUM_SECURITY)
             .address(new Address("123 Main St", "12345", "Springfield"))
             .build();
@@ -39,7 +39,7 @@ public class UpdatePrisonerTest {
             .firstName("John")
             .lastName("Smith")
             .incarcerationDate(LocalDateTime.now())
-            .imprisonmentEndTime(LocalDateTime.now().plusYears(5))
+            .imprisonmentEndDate(LocalDateTime.now().plusYears(5))
             .imprisonmentRigour(ImprisonmentRigour.MAXIMUM_SECURITY)
             .address(new Address("123 Main St", "12345", "Springfield"))
             .build();
