@@ -2,7 +2,7 @@ package com.piotrba.visitors.controllerTests;
 
 import com.piotrba.visitors.entity.Address;
 import com.piotrba.visitors.entity.Visitor;
-import com.piotrba.visitors.entity.visitorEnum.RelationshipToPrisioner;
+import com.piotrba.visitors.entity.RelationshipToPrisoner;
 import com.piotrba.visitors.repo.VisitorsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ public class GetVisitorIntegrationTest {
         visitorsRepository.deleteAll();
 
         Address address = new Address("123 Main St", "12345", "Springfield");
-        Visitor visitor = new Visitor(null, "John", "Doe", "123456789", address, "john.doe@example.com", true, 1L, RelationshipToPrisioner.FRIEND);
+        Visitor visitor = new Visitor(null, "John", "Doe", "123456789", address, "john.doe@example.com", 1L, RelationshipToPrisoner.FRIEND);
 
         visitorsRepository.save(visitor);
     }
