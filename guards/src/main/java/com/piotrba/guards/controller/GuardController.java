@@ -61,6 +61,7 @@ public class GuardController {
     }
 
     @GetMapping("/prisoner/{id}/visitors")
+    @ResponseStatus(HttpStatus.OK)
     public List<VisitorDTO> getVisitorsByPrisonerId(@PathVariable Long id) {
         logger.info("Fetching visitors for prisoner with ID: {}", id);
         return guardService.getVisitorsByPrisonerId(id);
