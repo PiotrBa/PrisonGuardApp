@@ -12,8 +12,9 @@ public class VisitorDTO {
     private String phoneNumber;
     private String email;
     private AddressDTO address;
+    private Long prisonerIdNumber;
     @Enumerated(EnumType.STRING)
     private RelationshipToPrisonerDTO relationshipToPrisoner;
-    private Long prisonerIdNumber;
+
 }
 
