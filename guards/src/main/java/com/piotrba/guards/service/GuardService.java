@@ -36,7 +36,6 @@ public class GuardService {
         return guardsRepository.findById(id);
     }
 
-    @Transactional
     public Guard registerNewGuard(Guard guard) {
         logger.info("Registering new guard: {}", guard);
         Optional<Guard> existingGuard = guardsRepository.findByEmail(guard.getEmail());
@@ -66,9 +65,8 @@ public class GuardService {
         existingGuard.setPhoneNumber(newGuard.getPhoneNumber());
         existingGuard.setAddress(newGuard.getAddress());
         existingGuard.setActive(newGuard.getActive());
-        Guard updatedGuard = guardsRepository.save(existingGuard);
-        logger.info("Guard updated successfully: {}", updatedGuard);
-        return updatedGuard;
+        logger.info("Guard updated successfully: {}", existingGuard);
+        return existingGuard;
     }
 
     public PrisonerDTO getPrisonerById(Long id) {
