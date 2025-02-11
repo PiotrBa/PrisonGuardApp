@@ -55,7 +55,6 @@ public class PrisonerService {
         logger.info("Prisoner with ID {} deleted successfully", id);
     }
 
-    @Transactional
     public Prisoner addPrisoner(Prisoner prisoner) {
         logger.info("Adding new prisoner: {}", prisoner);
         Prisoner savedPrisoner = prisonersRepository.save(prisoner);
