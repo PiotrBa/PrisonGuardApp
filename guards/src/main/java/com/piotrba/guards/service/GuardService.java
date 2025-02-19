@@ -65,6 +65,7 @@ public class GuardService {
         existingGuard.setPhoneNumber(newGuard.getPhoneNumber());
         existingGuard.setAddress(newGuard.getAddress());
         existingGuard.setActive(newGuard.getActive());
+        existingGuard.setGrantHighLevelAccess(newGuard.getGrantHighLevelAccess());
         logger.info("Guard updated successfully: {}", existingGuard);
         return existingGuard;
     }
