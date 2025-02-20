@@ -25,4 +25,11 @@ public class GlobalExceptionHandler {
         logger.error("Illegal state: {}", e.getMessage());
         return e.getMessage();
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleIllegalArgumentException(IllegalArgumentException e) {
+        logger.error("Invalid argument: {}", e.getMessage());
+        return e.getMessage();
+    }
 }
