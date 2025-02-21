@@ -126,4 +126,19 @@ public class GuardService {
     }
 
 
+    @Transactional
+    public Guard deleteGuard(Long id) {
+        logger.info("Attempting to delete guard with ID: {}", id);
+        Optional<Guard> existingGuardOptional = guardsRepository.findById(id);
+        if (existingGuardOptional.isEmpty()) {
+            logger.error("Guard with ID {} does not exist", id);
+            throw new IllegalArgumentException("Guard does not exist");
+        }
+        Guard existingGuard = existingGuardOptional.get();
+        existingGuard.setActive(false);
+        logger.info("Guard deactivated successfully: {}", existingGuard);
+        return existingGuard;
+    }
+
+
 }
