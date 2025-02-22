@@ -51,6 +51,13 @@ public class GuardController {
         return guardService.updateGuard(id, guard);
     }
 
+    @PostMapping("/delete/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Guard deleteGuard(@PathVariable Long id){
+        logger.info("Received request to delete guard with id: {}", id);
+        return guardService.deleteGuard(id);
+    }
+
     @PostMapping("/assign-prisoner")
     @ResponseStatus(HttpStatus.OK)
     public String assignPrisonerToVisitor(@RequestBody AssignRequest request) {
