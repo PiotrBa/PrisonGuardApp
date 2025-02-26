@@ -26,4 +26,5 @@ public class Prisoner {
     private ImprisonmentRigour imprisonmentRigour;
     @Embedded
     private Address address;
+    private Boolean active;
 }

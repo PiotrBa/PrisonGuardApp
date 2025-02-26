@@ -50,9 +50,15 @@ public class PrisonerService {
 
     @Transactional
     public void deletePrisoner(Long id) {
-        logger.info("Deleting prisoner with ID: {}", id);
-        prisonersRepository.deleteById(id);
-        logger.info("Prisoner with ID {} deleted successfully", id);
+        logger.info("Releasing prisoner with ID: {}", id);
+        Optional<Prisoner> prisonerOptional = prisonersRepository.findById(id);
+        if (prisonerOptional.isEmpty()){
+            logger.error("Prisoner with ID {} does not exist", id);
+            throw new IllegalArgumentException("Prisoner does not exist");
+        }
+        Prisoner existingPrisoner = prisonerOptional.get();
+        existingPrisoner.setActive(false);
+        logger.info("Successful release of a prisoner: {}", existingPrisoner);
     }
 
     public Prisoner addPrisoner(Prisoner prisoner) {
