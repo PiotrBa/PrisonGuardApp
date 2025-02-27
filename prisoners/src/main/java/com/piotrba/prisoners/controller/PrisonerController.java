@@ -52,7 +52,7 @@ public class PrisonerController {
     @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deletePrisoner(@PathVariable Long id) {
-        logger.info("Received request to delete prisoner with id: {}", id);
+        logger.info("Received request to release prisoner with id: {}", id);
         prisonerService.deletePrisoner(id);
     }
 }
