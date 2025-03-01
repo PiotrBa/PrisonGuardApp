@@ -1,12 +1,14 @@
 package com.piotrba.guards.serviceImplTests;
 
+import com.piotrba.guards.client.PrisonerClient;
+import com.piotrba.guards.client.VisitorClient;
 import com.piotrba.guards.entity.Address;
 import com.piotrba.guards.entity.Guard;
 import com.piotrba.guards.repo.GuardsRepository;
 import com.piotrba.guards.service.GuardService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -21,16 +23,51 @@ public class FindAllGuardTest {
 
     @Mock
     private GuardsRepository guardsRepository;
+    @Mock
+    private PrisonerClient prisonerClient;
+    @Mock
+    private VisitorClient visitorClient;
 
-    @InjectMocks
     private GuardService guardService;
+    private List<Guard> guardsList;
 
+    @BeforeEach
+    public void setUp() {
+        guardService = new GuardService(guardsRepository, prisonerClient, visitorClient);
 
-    List<Guard> guardsList = List.of(
-            new Guard(1L, "John", "Doe", "123456789", new Address("123 Main St", "12345", "Springfield"), "john.doe@example.com", true, true),
-            new Guard(2L, "Steve", "Smith", "123456789", new Address("456 Elm St", "54321", "Shelbyville"), "steve.smith@example.com", true, true),
-            new Guard(3L, "Emma", "Williams", "123456789", new Address("789 Oak St", "67890", "Capital City"), "emma.williams@example.com", true, true)
-    );
+        guardsList = List.of(
+                Guard.builder()
+                        .id(1L)
+                        .firstName("John")
+                        .lastName("Doe")
+                        .phoneNumber("123456789")
+                        .address(new Address("123 Main St", "12345", "Springfield"))
+                        .email("john.doe@example.com")
+                        .grantHighLevelAccess(true)
+                        .active(true)
+                        .build(),
+                Guard.builder()
+                        .id(2L)
+                        .firstName("Steve")
+                        .lastName("Smith")
+                        .phoneNumber("123456789")
+                        .address(new Address("456 Elm St", "54321", "Shelbyville"))
+                        .email("steve.smith@example.com")
+                        .grantHighLevelAccess(true)
+                        .active(true)
+                        .build(),
+                Guard.builder()
+                        .id(3L)
+                        .firstName("Emma")
+                        .lastName("Williams")
+                        .phoneNumber("123456789")
+                        .address(new Address("789 Oak St", "67890", "Capital City"))
+                        .email("emma.williams@example.com")
+                        .grantHighLevelAccess(true)
+                        .active(true)
+                        .build()
+        );
+    }
 
     @Test
     public void findAllGuard_whenGuardsExist_shouldReturnGuardList() {
