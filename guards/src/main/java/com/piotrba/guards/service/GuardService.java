@@ -127,7 +127,7 @@ public class GuardService {
 
 
     @Transactional
-    public Guard deleteGuard(Long id) {
+    public void deleteGuard(Long id) {
         logger.info("Attempting to delete guard with ID: {}", id);
         Optional<Guard> existingGuardOptional = guardsRepository.findById(id);
         if (existingGuardOptional.isEmpty()) {
@@ -137,7 +137,6 @@ public class GuardService {
         Guard existingGuard = existingGuardOptional.get();
         existingGuard.setActive(false);
         logger.info("Guard deactivated successfully: {}", existingGuard);
-        return existingGuard;
     }
 
 

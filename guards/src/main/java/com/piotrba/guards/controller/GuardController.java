@@ -53,9 +53,8 @@ public class GuardController {
 
     @PostMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Guard deleteGuard(@PathVariable Long id){
+    public void deleteGuard(@PathVariable Long id){
         logger.info("Received request to delete guard with id: {}", id);
-        return guardService.deleteGuard(id);
     }
 
     @PostMapping("/assign-prisoner")
