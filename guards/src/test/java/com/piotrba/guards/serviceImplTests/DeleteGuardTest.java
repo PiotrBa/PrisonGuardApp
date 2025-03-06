@@ -1,8 +1,11 @@
 package com.piotrba.guards.serviceImplTests;
 
+import com.piotrba.guards.client.PrisonerClient;
+import com.piotrba.guards.client.VisitorClient;
 import com.piotrba.guards.entity.Guard;
 import com.piotrba.guards.repo.GuardsRepository;
 import com.piotrba.guards.service.GuardService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,35 +22,43 @@ public class DeleteGuardTest {
 
     @Mock
     private GuardsRepository guardsRepository;
+    @Mock
+    private PrisonerClient prisonerClient;
+    @Mock
+    private VisitorClient visitorClient;
 
     @InjectMocks
     private GuardService guardService;
-    public Guard existingGuard = Guard.builder()
-            .id(1L)
-            .firstName("John")
-            .lastName("Smith")
-            .active(true)
-            .build();
+    private Guard existingGuard;
 
-    @Test
-    public void findGuardById_whenGuardExist_shouldChangeActiveForFalse() {
-        when(guardsRepository.findById(existingGuard.getId())).thenReturn(Optional.of(existingGuard));
-
-        Guard result = guardService.deleteGuard(existingGuard.getId());
-
-        assertNotNull(result);
-        assertEquals(existingGuard.getFirstName(), result.getFirstName());
-        assertEquals(existingGuard.getLastName(), result.getLastName());
-        assertFalse(result.getActive());
-
-        verify(guardsRepository, never()).save(any(Guard.class));
+    @BeforeEach
+    public void setUp() {
+        existingGuard = Guard.builder()
+                .id(1L)
+                .firstName("John")
+                .lastName("Smith")
+                .active(true)
+                .build();
     }
 
     @Test
-    public void findGuardById_whenGuardIsNotExist_shouldThrowException(){
+    public void findGuardById_whenGuardExists_shouldChangeActiveToFalse() {
+        when(guardsRepository.findById(existingGuard.getId())).thenReturn(Optional.of(existingGuard));
+        guardService.deleteGuard(existingGuard.getId());
+        assertFalse(existingGuard.getActive());
+        verify(guardsRepository, times(0)).save(any(Guard.class));
+    }
+
+
+    @Test
+    public void findGuardById_whenGuardIsNotExist_shouldThrowException() {
         when(guardsRepository.findById(999L)).thenReturn(Optional.empty());
-        Exception exception = assertThrows(IllegalArgumentException.class, ()-> guardService.deleteGuard(999L));
-        assertEquals("Guard does not exist", exception.getMessage());
+        try {
+            guardService.deleteGuard(999L);
+            fail("Expected an IllegalArgumentException to be thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Guard does not exist", e.getMessage());
+        }
         verify(guardsRepository, never()).save(any(Guard.class));
     }
 }
