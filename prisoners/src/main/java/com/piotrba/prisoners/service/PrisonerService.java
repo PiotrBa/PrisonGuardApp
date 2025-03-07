@@ -63,8 +63,16 @@ public class PrisonerService {
 
     public Prisoner addPrisoner(Prisoner prisoner) {
         logger.info("Adding new prisoner: {}", prisoner);
+        Optional<Prisoner> existingPrisoner = prisonersRepository.findByFirstNameAndLastName(
+                prisoner.getFirstName(), prisoner.getLastName()
+        );
+        if (existingPrisoner.isPresent()) {
+            logger.error("Prisoner already exists with this name and last name");
+            throw new IllegalStateException("Prisoner already exists with this name and last name");
+        }
         Prisoner savedPrisoner = prisonersRepository.save(prisoner);
         logger.info("Prisoner added successfully: {}", savedPrisoner);
         return savedPrisoner;
     }
+
 }
