@@ -5,6 +5,7 @@ import com.piotrba.prisoners.entity.ImprisonmentRigour;
 import com.piotrba.prisoners.entity.Prisoner;
 import com.piotrba.prisoners.repo.PrisonersRepository;
 import com.piotrba.prisoners.service.PrisonerService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,10 +14,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,20 +29,43 @@ public class FindAllPrisonersTest {
     @InjectMocks
     private PrisonerService prisonerService;
 
-    List<Prisoner> prisonerList = new ArrayList<>(Arrays.asList(
-            new Prisoner(1L, "John", "Doe", LocalDateTime.now(), LocalDateTime.now().plusYears(5), ImprisonmentRigour.MAXIMUM_SECURITY, new Address("123 Main St", "12345", "Springfield")),
-            new Prisoner(2L, "Jane", "Doe", LocalDateTime.now(), LocalDateTime.now().plusYears(3), ImprisonmentRigour.MINIMUM_SECURITY, new Address("456 Elm St", "54321", "Shelbyville"))
-    ));
+    private List<Prisoner> prisonerList;
+
+    @BeforeEach
+    public void setUp() {
+        prisonerList = List.of(
+                Prisoner.builder()
+                        .id(1L)
+                        .firstName("John")
+                        .lastName("Doe")
+                        .incarcerationDate(LocalDateTime.now())
+                        .imprisonmentEndDate(LocalDateTime.now().plusYears(5))
+                        .imprisonmentRigour(ImprisonmentRigour.MAXIMUM_SECURITY)
+                        .address(new Address("123 Main St", "12345", "Springfield"))
+                        .active(true) // Dodajemy pole active
+                        .build(),
+                Prisoner.builder()
+                        .id(2L)
+                        .firstName("Jane")
+                        .lastName("Doe")
+                        .incarcerationDate(LocalDateTime.now())
+                        .imprisonmentEndDate(LocalDateTime.now().plusYears(3))
+                        .imprisonmentRigour(ImprisonmentRigour.MINIMUM_SECURITY)
+                        .address(new Address("456 Elm St", "54321", "Shelbyville"))
+                        .active(true)
+                        .build()
+        );
+    }
 
     @Test
-    public void findAllPrisoners_whenPrisonerExist_shouldReturnPrisonerList () {
+    public void findAllPrisoners_whenPrisonersExist_shouldReturnPrisonerList() {
         when(prisonersRepository.findAll()).thenReturn(prisonerList);
         List<Prisoner> result = prisonerService.findAll();
         assertEquals(prisonerList, result);
     }
 
     @Test
-    public void findAllPrisoners_whenPrisonerDoNotExist_shouldReturnEmptyList() {
+    public void findAllPrisoners_whenNoPrisonersExist_shouldReturnEmptyList() {
         when(prisonersRepository.findAll()).thenReturn(new ArrayList<>());
         List<Prisoner> result = prisonerService.findAll();
         assertTrue(result.isEmpty());
