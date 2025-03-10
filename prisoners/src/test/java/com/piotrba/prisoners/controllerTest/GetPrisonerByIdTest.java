@@ -14,11 +14,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -37,25 +37,34 @@ public class GetPrisonerByIdTest {
         prisonersRepository.deleteAll();
 
         Address address = new Address("123 Main St", "12345", "Springfield");
-        prisoner = new Prisoner(null, "John", "Doe", LocalDateTime.now(), LocalDateTime.now().plusYears(2), ImprisonmentRigour.MEDIUM_SECURITY, address);
-        prisonersRepository.save(prisoner);
+        prisoner = Prisoner.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .incarcerationDate(LocalDateTime.now())
+                .imprisonmentEndDate(LocalDateTime.now().plusYears(2))
+                .imprisonmentRigour(ImprisonmentRigour.MEDIUM_SECURITY)
+                .address(address)
+                .active(true)
+                .build();
+
+        prisoner = prisonersRepository.save(prisoner);
     }
 
     @Test
     public void testGetPrisonerById_PrisonerExists() throws Exception {
-        mockMvc.perform(get("/prisoner/{id}", prisoner.getId())
+        mockMvc.perform(get("/prisoners/{id}", prisoner.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.firstName", is("John")))
                 .andExpect(jsonPath("$.lastName", is("Doe")))
                 .andExpect(jsonPath("$.imprisonmentRigour", is("MEDIUM_SECURITY")))
-                .andExpect(jsonPath("$.address.firstLine", is("123 Main St")));
+                .andExpect(jsonPath("$.address.street", is("123 Main St")));
     }
 
     @Test
     public void testGetPrisonerById_PrisonerDoesNotExist() throws Exception {
-        mockMvc.perform(get("/prisoner/{id}", 999L)
+        mockMvc.perform(get("/prisoners/{id}", 999L)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
