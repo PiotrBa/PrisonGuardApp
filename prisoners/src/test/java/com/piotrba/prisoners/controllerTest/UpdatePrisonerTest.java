@@ -15,11 +15,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -41,15 +41,32 @@ public class UpdatePrisonerTest {
         prisonersRepository.deleteAll();
 
         Address address = new Address("123 Main St", "12345", "Springfield");
-        existingPrisoner = new Prisoner(null, "John", "Doe", LocalDateTime.now(), LocalDateTime.now().plusYears(2), ImprisonmentRigour.MEDIUM_SECURITY, address);
-        prisonersRepository.save(existingPrisoner);
+        existingPrisoner = Prisoner.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .incarcerationDate(LocalDateTime.now())
+                .imprisonmentEndDate(LocalDateTime.now().plusYears(2))
+                .imprisonmentRigour(ImprisonmentRigour.MEDIUM_SECURITY)
+                .address(address)
+                .active(true)
+                .build();
+
+        existingPrisoner = prisonersRepository.save(existingPrisoner);
     }
 
     @Test
     public void testUpdatePrisoner_PrisonerExists() throws Exception {
-        Prisoner updatedPrisoner = new Prisoner(null, "Jane", "Doe", LocalDateTime.now(), LocalDateTime.now().plusYears(3), ImprisonmentRigour.MAXIMUM_SECURITY, new Address("456 Elm St", "54321", "Shelbyville"));
+        Prisoner updatedPrisoner = Prisoner.builder()
+                .firstName("Jane")
+                .lastName("Doe")
+                .incarcerationDate(LocalDateTime.now())
+                .imprisonmentEndDate(LocalDateTime.now().plusYears(3))
+                .imprisonmentRigour(ImprisonmentRigour.MAXIMUM_SECURITY)
+                .address(new Address("456 Elm St", "54321", "Shelbyville"))
+                .active(true)
+                .build();
 
-        mockMvc.perform(post("/prisoner/update/{id}", existingPrisoner.getId())
+        mockMvc.perform(put("/prisoners/update/{id}", existingPrisoner.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedPrisoner)))
                 .andExpect(status().isOk())
@@ -57,14 +74,22 @@ public class UpdatePrisonerTest {
                 .andExpect(jsonPath("$.firstName", is("Jane")))
                 .andExpect(jsonPath("$.lastName", is("Doe")))
                 .andExpect(jsonPath("$.imprisonmentRigour", is("MAXIMUM_SECURITY")))
-                .andExpect(jsonPath("$.address.firstLine", is("456 Elm St")));
+                .andExpect(jsonPath("$.address.street", is("456 Elm St")));
     }
 
     @Test
     public void testUpdatePrisoner_PrisonerDoesNotExist() throws Exception {
-        Prisoner updatedPrisoner = new Prisoner(null, "Jane", "Doe", LocalDateTime.now(), LocalDateTime.now().plusYears(3), ImprisonmentRigour.MAXIMUM_SECURITY, new Address("456 Elm St", "54321", "Shelbyville"));
+        Prisoner updatedPrisoner = Prisoner.builder()
+                .firstName("Jane")
+                .lastName("Doe")
+                .incarcerationDate(LocalDateTime.now())
+                .imprisonmentEndDate(LocalDateTime.now().plusYears(3))
+                .imprisonmentRigour(ImprisonmentRigour.MAXIMUM_SECURITY)
+                .address(new Address("456 Elm St", "54321", "Shelbyville"))
+                .active(true)
+                .build();
 
-        mockMvc.perform(post("/prisoner/update/{id}", 999L)
+        mockMvc.perform(put("/prisoners/update/{id}", 999L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedPrisoner)))
                 .andExpect(status().isNotFound());
