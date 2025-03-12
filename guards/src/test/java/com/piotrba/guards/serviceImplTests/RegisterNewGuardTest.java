@@ -59,12 +59,11 @@ public class RegisterNewGuardTest {
     @Test
     public void registerNewGuard_withExistingEmail_shouldNotRegisterNewGuard() {
         when(guardsRepository.findByEmail(guard.getEmail())).thenReturn(Optional.of(existingGuard));
-        try {
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
             guardService.registerNewGuard(guard);
-            fail("Expected an IllegalStateException to be thrown");
-        } catch (IllegalStateException e) {
-            assertEquals("Guard already exists with this email address", e.getMessage());
-        }
+        });
+        assertEquals("Guard already exists with this email address", exception.getMessage());
         verify(guardsRepository, never()).save(any(Guard.class));
     }
+
 }
