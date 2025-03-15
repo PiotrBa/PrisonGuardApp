@@ -11,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,6 +30,37 @@ public class GuardServiceTest {
     @InjectMocks
     private GuardService guardService;
 
+    @Test
+    public void findAllGuard_whenGuardsExist_shouldReturnGuardList() {
+        //given
+       List<Guard> guardsList = List.of(
+               Guard.builder()
+                       .id(1L)
+                       .firstName("Peter")
+                       .lastName("Parker")
+                       .build(),
+               Guard.builder()
+                       .id(2L)
+                       .firstName("Emma")
+                       .lastName("Star")
+                       .build()
+       );
+        when(guardsRepository.findAll()).thenReturn(guardsList);
+        //when
+        List<Guard> result = guardService.findAllGuards();
+        //then
+        assertEquals(guardsList, result);
+    }
+
+    @Test
+    public void findAllGuard_whenGuardsDoNotExist_shouldReturnEmptyList() {
+        //given
+        when(guardsRepository.findAll()).thenReturn(Collections.emptyList());
+        //when
+        List<Guard> result = guardService.findAllGuards();
+        //then
+        assertTrue(result.isEmpty());
+    }
 
     @Test
     public void registerNewGuard_withoutExistingEmail_shouldRegisterNewGuard() {
