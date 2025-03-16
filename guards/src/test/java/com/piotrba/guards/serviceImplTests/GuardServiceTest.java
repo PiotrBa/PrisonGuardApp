@@ -63,6 +63,31 @@ public class GuardServiceTest {
     }
 
     @Test
+    public void findGuardById_whenGuardExists_shouldReturnGuard() {
+        //given
+        Guard guard = Guard.builder()
+                .id(1L)
+                .firstName("Emma")
+                .lastName("Star")
+                .build();
+        when(guardsRepository.findById(1L)).thenReturn(Optional.of(guard));
+        //when
+        Optional<Guard> result = guardService.findGuardById(1L);
+        //then
+        assertEquals(Optional.of(guard), result);
+    }
+
+    @Test
+    public void findGuardById_whenGuardDoesNotExist_shouldReturnEmptyOptional() {
+        //given
+        when(guardsRepository.findById(1L)).thenReturn(Optional.empty());
+        //when
+        Optional<Guard> result = guardService.findGuardById(1L);
+        //then
+        assertFalse(result.isPresent());
+    }
+
+    @Test
     public void registerNewGuard_withoutExistingEmail_shouldRegisterNewGuard() {
         //given
         String email = "john.doe@example.com";
