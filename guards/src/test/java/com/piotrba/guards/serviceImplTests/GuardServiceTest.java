@@ -33,23 +33,20 @@ public class GuardServiceTest {
     @Test
     public void findAllGuard_whenGuardsExist_shouldReturnGuardList() {
         //given
-       List<Guard> guardsList = List.of(
-               Guard.builder()
-                       .id(1L)
-                       .firstName("Peter")
-                       .lastName("Parker")
-                       .build(),
-               Guard.builder()
-                       .id(2L)
-                       .firstName("Emma")
-                       .lastName("Star")
-                       .build()
-       );
+        List<Guard> guardsList = List.of(
+                Guard.builder()
+                        .id(1L)
+                        .build(),
+                Guard.builder()
+                        .id(2L)
+                        .build()
+        );
         when(guardsRepository.findAll()).thenReturn(guardsList);
         //when
         List<Guard> result = guardService.findAllGuards();
         //then
         assertEquals(guardsList, result);
+        verify(guardsRepository).findAll();
     }
 
     @Test
@@ -60,6 +57,7 @@ public class GuardServiceTest {
         List<Guard> result = guardService.findAllGuards();
         //then
         assertTrue(result.isEmpty());
+        verify(guardsRepository).findAll();
     }
 
     @Test
@@ -67,14 +65,14 @@ public class GuardServiceTest {
         //given
         Guard guard = Guard.builder()
                 .id(1L)
-                .firstName("Emma")
-                .lastName("Star")
                 .build();
         when(guardsRepository.findById(1L)).thenReturn(Optional.of(guard));
         //when
         Optional<Guard> result = guardService.findGuardById(1L);
         //then
-        assertEquals(Optional.of(guard), result);
+        assertTrue(result.isPresent());
+        assertEquals(guard, result.get());
+        verify(guardsRepository).findById(1L);
     }
 
     @Test
@@ -84,7 +82,8 @@ public class GuardServiceTest {
         //when
         Optional<Guard> result = guardService.findGuardById(1L);
         //then
-        assertFalse(result.isPresent());
+        assertTrue(result.isEmpty());
+        verify(guardsRepository).findById(1L);
     }
 
     @Test
