@@ -131,7 +131,4 @@ public class GuardServiceTest {
         verify(guardsRepository, never()).save(any());
         verify(guardsRepository).findByEmail(email);
     }
-
-
-
 }
