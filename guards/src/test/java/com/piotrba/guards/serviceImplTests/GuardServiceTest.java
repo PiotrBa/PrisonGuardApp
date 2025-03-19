@@ -131,4 +131,36 @@ public class GuardServiceTest {
         verify(guardsRepository, never()).save(any());
         verify(guardsRepository).findByEmail(email);
     }
+
+    @Test
+    public void updateGuard_withValidId_shouldUpdateGuard() {
+        //given
+        Guard existingGuard = Guard.builder()
+                .id(1L)
+                .firstName("Andy")
+                .lastName("Smith")
+                .email("andy.smith@example.com")
+                .phoneNumber("+123456789")
+                .active(true)
+                .grantHighLevelAccess(false)
+                .build();
+
+       Guard updatedGuard = Guard.builder()
+                .id(1L)
+                .firstName("Andrew")
+                .lastName("Smithson")
+                .email("andrew.smithson@example.com")
+                .phoneNumber("+987654321")
+                .active(true)
+               .grantHighLevelAccess(false)
+               .build();
+
+        when(guardsRepository.findById(existingGuard.getId())).thenReturn(Optional.of(existingGuard));
+        //when
+        assertThrows(IllegalAccessException.class, ()-> guardService.updateGuard(existingGuard.getId(), updatedGuard));
+        //then
+        Guard result = guardService.updateGuard(existingGuard.getId(), updatedGuard);
+        assertNotNull(result);
+        verify(guardsRepository, never()).save(any(Guard.class));
+    }
 }
