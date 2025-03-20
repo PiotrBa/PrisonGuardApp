@@ -144,7 +144,6 @@ public class GuardServiceTest {
                 .active(true)
                 .grantHighLevelAccess(false)
                 .build();
-
        Guard updatedGuard = Guard.builder()
                 .id(1L)
                 .firstName("Andrew")
@@ -157,10 +156,43 @@ public class GuardServiceTest {
 
         when(guardsRepository.findById(existingGuard.getId())).thenReturn(Optional.of(existingGuard));
         //when
-        assertThrows(IllegalAccessException.class, ()-> guardService.updateGuard(existingGuard.getId(), updatedGuard));
-        //then
         Guard result = guardService.updateGuard(existingGuard.getId(), updatedGuard);
+        //then
         assertNotNull(result);
+        assertEquals(updatedGuard.getFirstName(), result.getFirstName());
+        assertEquals(updatedGuard.getLastName(), result.getLastName());
+        assertEquals(updatedGuard.getEmail(), result.getEmail());
+        assertEquals(updatedGuard.getPhoneNumber(), result.getPhoneNumber());
+        assertEquals(updatedGuard.getActive(), result.getActive());
+        assertEquals(updatedGuard.getGrantHighLevelAccess(), result.getGrantHighLevelAccess());
+
+        verify(guardsRepository).findById(existingGuard.getId());
+        verify(guardsRepository, never()).save(any(Guard.class));
+    }
+
+    @Test
+    public void updateGuard_withInvalidId_shouldThrowException() {
+        //given
+        Long nonExistentId = 1L;
+        Guard updatedGuard = Guard.builder()
+                .id(nonExistentId)
+                .firstName("Andy")
+                .lastName("Smith")
+                .email("andy.smith@example.com")
+                .phoneNumber("+123456789")
+                .active(true)
+                .grantHighLevelAccess(false)
+                .build();
+
+        when(guardsRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        //when
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> guardService.updateGuard(nonExistentId, updatedGuard));
+
+        //then
+        assertEquals("Guard does not exist", e.getMessage());
+
+        verify(guardsRepository).findById(nonExistentId);
         verify(guardsRepository, never()).save(any(Guard.class));
     }
 }
