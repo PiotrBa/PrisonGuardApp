@@ -2,6 +2,7 @@ package com.piotrba.guards.serviceImplTests;
 
 import com.piotrba.guards.client.PrisonerClient;
 import com.piotrba.guards.client.VisitorClient;
+import com.piotrba.guards.dto.prisoner.PrisonerDTO;
 import com.piotrba.guards.entity.Guard;
 import com.piotrba.guards.repo.GuardsRepository;
 import com.piotrba.guards.service.GuardService;
@@ -195,4 +196,34 @@ public class GuardServiceTest {
         verify(guardsRepository).findById(nonExistentId);
         verify(guardsRepository, never()).save(any(Guard.class));
     }
+
+    @Test
+    public void getPrisonerById_withValidId_shouldReturnPrisoner() {
+        //given
+        PrisonerDTO existingPrisoner = PrisonerDTO.builder()
+                .id(1L)
+                .build();
+        when(prisonerClient.getPrisonerById(existingPrisoner.getId())).thenReturn(existingPrisoner);
+        //when
+        PrisonerDTO result = guardService.getPrisonerById(existingPrisoner.getId());
+        assertNotNull(result);
+        assertEquals(existingPrisoner.getId(), result.getId());
+        //then
+        verify(prisonerClient, times(1)).getPrisonerById(existingPrisoner.getId());
+    }
+
+    @Test
+    public void getPrisonerById_withInvalidId_shouldThrowException() {
+        //given
+        Long notExistingId = 1L;
+        when(prisonerClient.getPrisonerById(notExistingId)).thenReturn(null);
+
+        //when
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> guardService.getPrisonerById(notExistingId));
+
+        //then
+        assertEquals("Prisoner with ID " + notExistingId + " does not exist", exception.getMessage());
+        verify(prisonerClient, times(1)).getPrisonerById(notExistingId);
+    }
+
 }
