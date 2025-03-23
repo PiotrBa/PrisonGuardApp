@@ -252,6 +252,4 @@ public class GuardServiceTest {
         assertEquals("Visitor with ID " + notExistingId + " does not exist", exception.getMessage());
         verify(visitorClient, times(1)).getVisitorById(notExistingId);
     }
-
-
 }
