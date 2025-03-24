@@ -2,7 +2,9 @@ package com.piotrba.guards.serviceImplTests;
 
 import com.piotrba.guards.client.PrisonerClient;
 import com.piotrba.guards.client.VisitorClient;
+import com.piotrba.guards.dto.AssignRequest;
 import com.piotrba.guards.dto.prisoner.PrisonerDTO;
+import com.piotrba.guards.dto.visitor.RelationshipToPrisonerDTO;
 import com.piotrba.guards.dto.visitor.VisitorDTO;
 import com.piotrba.guards.entity.Guard;
 import com.piotrba.guards.repo.GuardsRepository;
@@ -251,5 +253,65 @@ public class GuardServiceTest {
         //then
         assertEquals("Visitor with ID " + notExistingId + " does not exist", exception.getMessage());
         verify(visitorClient, times(1)).getVisitorById(notExistingId);
+    }
+
+    @Test
+    public void assignPrisonerToVisitor_whenValidIds_shouldAssignSuccessfully() {
+        //given
+        PrisonerDTO prisoner = PrisonerDTO.builder()
+                .id(1L)
+                .build();
+        VisitorDTO visitor = VisitorDTO.builder()
+                .id(2L)
+                .build();
+        AssignRequest assignRequest = AssignRequest.builder()
+                .prisonerId(1L)
+                .visitorId(2L)
+                .relationshipToPrisoner("FRIEND")
+                .build();
+        when(prisonerClient.getPrisonerById(1L)).thenReturn(prisoner);
+        when(visitorClient.getVisitorById(2L)).thenReturn(visitor);
+        //when
+        guardService.assignPrisonerToVisitor(assignRequest);
+        //then
+        assertEquals(1L, visitor.getPrisonerIdNumber());
+        assertEquals(RelationshipToPrisonerDTO.FRIEND, visitor.getRelationshipToPrisoner());
+        verify(visitorClient, times(1)).updateVisitor(2L, visitor);
+    }
+
+    @Test
+    public void assignPrisonerToVisitor_whenPrisonerNotFound_shouldThrowException() {
+        //given
+        AssignRequest assignRequest = AssignRequest.builder()
+                .prisonerId(1L)
+                .visitorId(2L)
+                .relationshipToPrisoner("FRIEND")
+                .build();
+        when(prisonerClient.getPrisonerById(1L)).thenReturn(null);
+        //when
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> guardService.assignPrisonerToVisitor(assignRequest));
+        //then
+        assertEquals("Prisoner with ID 1 does not exist", exception.getMessage());
+        verify(visitorClient, never()).updateVisitor(anyLong(), any(VisitorDTO.class));
+    }
+
+    @Test
+    public void assignPrisonerToVisitor_whenVisitorNotFound_shouldThrowException() {
+        //given
+        PrisonerDTO prisoner = PrisonerDTO.builder()
+                .id(1L)
+                .build();
+        AssignRequest assignRequest = AssignRequest.builder()
+                .prisonerId(1L)
+                .visitorId(2L)
+                .relationshipToPrisoner("FRIEND")
+                .build();
+        when(prisonerClient.getPrisonerById(1L)).thenReturn(prisoner);
+        when(visitorClient.getVisitorById(2L)).thenReturn(null);
+        //when
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> guardService.assignPrisonerToVisitor(assignRequest));
+        //then
+        assertEquals("Visitor with ID 2 does not exist", exception.getMessage());
+        verify(visitorClient, never()).updateVisitor(anyLong(), any(VisitorDTO.class));
     }
 }
