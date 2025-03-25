@@ -314,4 +314,54 @@ public class GuardServiceTest {
         assertEquals("Visitor with ID 2 does not exist", exception.getMessage());
         verify(visitorClient, never()).updateVisitor(anyLong(), any(VisitorDTO.class));
     }
+
+    @Test
+    public void getVisitorsByPrisonerId_whenVisitorsExist_shouldReturnVisitorList() {
+        //given
+        VisitorDTO visitor1 = VisitorDTO.builder()
+                .id(1L)
+                .prisonerIdNumber(10L)
+                .build();
+        VisitorDTO visitor2 = VisitorDTO.builder()
+                .id(2L)
+                .prisonerIdNumber(10L)
+                .build();
+        VisitorDTO visitor3 = VisitorDTO.builder()
+                .id(3L)
+                .prisonerIdNumber(15L)
+                .build();
+        when(visitorClient.getAllVisitors()).thenReturn(List.of(visitor1, visitor2, visitor3));
+        //when
+        List<VisitorDTO> result = guardService.getVisitorsByPrisonerId(10L);
+        //then
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertTrue(result.contains(visitor1));
+        assertTrue(result.contains(visitor2));
+        assertFalse(result.contains(visitor3));
+        verify(visitorClient, times(1)).getAllVisitors();
+    }
+
+    @Test
+    public void getVisitorsByPrisonerId_whenNoVisitorsFound_shouldThrowException() {
+        //given
+        VisitorDTO visitor1 = VisitorDTO.builder()
+                .id(1L)
+                .prisonerIdNumber(10L)
+                .build();
+        VisitorDTO visitor2 = VisitorDTO.builder()
+                .id(2L)
+                .prisonerIdNumber(10L)
+                .build();
+        VisitorDTO visitor3 = VisitorDTO.builder()
+                .id(3L)
+                .prisonerIdNumber(15L)
+                .build();
+        when(visitorClient.getAllVisitors()).thenReturn(List.of(visitor1, visitor2, visitor3));
+        //when
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> guardService.getVisitorsByPrisonerId(20L));
+        //then
+        assertEquals("No visitors found for prisoner with ID 20", exception.getMessage());
+        verify(visitorClient, times(1)).getAllVisitors();
+    }
 }
