@@ -364,4 +364,34 @@ public class GuardServiceTest {
         assertEquals("No visitors found for prisoner with ID 20", exception.getMessage());
         verify(visitorClient, times(1)).getAllVisitors();
     }
+
+    @Test
+    public void deleteGuard_whenGuardExists_shouldSetActiveToFalse() {
+        //given
+        Guard existingGuard = Guard.builder()
+                .id(1L)
+                .active(true)
+                .build();
+        when(guardsRepository.findById(1L)).thenReturn(Optional.of(existingGuard));
+        //when
+        guardService.deleteGuard(1L);
+        //then
+        assertFalse(existingGuard.getActive());
+        verify(guardsRepository, times(1)).findById(1L);
+        verify(guardsRepository, never()).save(any());
+    }
+
+
+    @Test
+    public void deleteGuard_whenGuardDoesNotExist_shouldThrowException() {
+        //given
+        when(guardsRepository.findById(1L)).thenReturn(Optional.empty());
+        //when
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> guardService.deleteGuard(1L));
+        //then
+        assertEquals("Guard does not exist", exception.getMessage());
+        verify(guardsRepository).findById(1L);
+        verify(guardsRepository, never()).save(any());
+    }
+
 }
