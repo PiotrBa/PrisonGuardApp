@@ -393,5 +393,4 @@ public class GuardServiceTest {
         verify(guardsRepository).findById(1L);
         verify(guardsRepository, never()).save(any());
     }
-
 }
