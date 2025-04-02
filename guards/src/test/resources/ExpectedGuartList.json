@@ -1,0 +1,41 @@
+[
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "phoneNumber": "123456789",
+    "address": {
+      "firstLine": "123 Main St",
+      "postCode": "12345",
+      "city": "Springfield"
+    },
+    "email": "john.doe@example.com",
+    "grantHighLevelAccess": true,
+    "active": true
+  },
+  {
+    "firstName": "Steve",
+    "lastName": "Smith",
+    "phoneNumber": "123456789",
+    "address": {
+      "firstLine": "456 Elm St",
+      "postCode": "54321",
+      "city": "Shelbyville"
+    },
+    "email": "steve.smith@example.com",
+    "grantHighLevelAccess": true,
+    "active": true
+  },
+  {
+    "firstName": "Emma",
+    "lastName": "Williams",
+    "phoneNumber": "123456789",
+    "address": {
+      "firstLine": "789 Oak St",
+      "postCode": "67890",
+      "city": "Capital City"
+    },
+    "email": "emma.williams@example.com",
+    "grantHighLevelAccess": true,
+    "active": true
+  }
+]

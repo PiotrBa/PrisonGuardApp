@@ -1,0 +1,58 @@
+package com.piotrba.guards.controllerTests;
+
+import com.piotrba.guards.entity.Address;
+import com.piotrba.guards.entity.Guard;
+import com.piotrba.guards.repo.GuardsRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class GuardControllerIntegrationTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private GuardsRepository guardsRepository;
+
+    @BeforeEach
+    void setUp() {
+        guardsRepository.deleteAll();
+        List<Guard> guards = Arrays.asList(
+                new Guard(1L, "John", "Doe", "123456789", new Address("123 Main St", "12345", "Springfield"), "john.doe@example.com", true, true),
+                new Guard(2L, "Steve", "Smith", "123456789", new Address("456 Elm St", "54321", "Shelbyville"), "steve.smith@example.com", true, true),
+                new Guard(3L, "Emma", "Williams", "123456789", new Address("789 Oak St", "67890", "Capital City"), "emma.williams@example.com", true, true)
+        );
+        guardsRepository.saveAll(guards);
+    }
+
+    @Test
+    void testGetAllGuards() throws Exception {
+        MvcResult result = mockMvc.perform(get("/guard/all")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        String actualResponse = result.getResponse().getContentAsString();
+        String expectedResponse = Files.readString(Path.of("src/test/resources/ExpectedGuartList.json"));
+        JSONAssert.assertEquals(expectedResponse, actualResponse, JSONCompareMode.LENIENT);
+    }
+
+
+}
