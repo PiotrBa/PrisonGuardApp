@@ -54,5 +54,14 @@ class GuardControllerIntegrationTest {
         JSONAssert.assertEquals(expectedResponse, actualResponse, JSONCompareMode.LENIENT);
     }
 
+    @Test
+    void testGetAllGuards_whenNoGuards_thenReturnEmptyList() throws Exception {
+        guardsRepository.deleteAll();
+        mockMvc.perform(get("/guard/all")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
+    }
+
 
 }
