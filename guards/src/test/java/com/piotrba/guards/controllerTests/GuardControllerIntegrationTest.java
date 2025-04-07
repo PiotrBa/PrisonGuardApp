@@ -1,5 +1,8 @@
 package com.piotrba.guards.controllerTests;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.piotrba.guards.entity.Address;
 import com.piotrba.guards.entity.Guard;
 import com.piotrba.guards.repo.GuardsRepository;
@@ -36,9 +39,9 @@ class GuardControllerIntegrationTest {
     void setUp() {
         guardsRepository.deleteAll();
         List<Guard> guards = Arrays.asList(
-                new Guard(1L, "John", "Doe", "123456789", new Address("123 Main St", "12345", "Springfield"), "john.doe@example.com", true, true),
-                new Guard(2L, "Steve", "Smith", "123456789", new Address("456 Elm St", "54321", "Shelbyville"), "steve.smith@example.com", true, true),
-                new Guard(3L, "Emma", "Williams", "123456789", new Address("789 Oak St", "67890", "Capital City"), "emma.williams@example.com", true, true)
+                new Guard(null, "John", "Doe", "123456789", new Address("123 Main St", "12345", "Springfield"), "john.doe@example.com", true, true),
+                new Guard(null, "Steve", "Smith", "123456789", new Address("456 Elm St", "54321", "Shelbyville"), "steve.smith@example.com", true, true),
+                new Guard(null, "Emma", "Williams", "123456789", new Address("789 Oak St", "67890", "Capital City"), "emma.williams@example.com", true, true)
         );
         guardsRepository.saveAll(guards);
     }
@@ -63,5 +66,26 @@ class GuardControllerIntegrationTest {
                 .andExpect(content().json("[]"));
     }
 
+
+    @Test
+    void testGetGuardById() throws Exception {
+        String expectedJson = Files.readString(Path.of("src/test/resources/ExpectedGuardJohn.json"));
+        ObjectMapper mapper = new ObjectMapper();
+        Guard guard = mapper.readValue(expectedJson, Guard.class);
+
+        Guard saved = guardsRepository.save(guard);
+
+        MvcResult result = mockMvc.perform(get("/guard/" + saved.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JsonNode expectedJsonNode = mapper.readTree(expectedJson);
+        ((ObjectNode) expectedJsonNode).put("id", saved.getId());
+
+        String expectedResponse = mapper.writeValueAsString(expectedJsonNode);
+        String actualResponse = result.getResponse().getContentAsString();
+        JSONAssert.assertEquals(expectedResponse, actualResponse, JSONCompareMode.LENIENT);
+    }
 
 }
