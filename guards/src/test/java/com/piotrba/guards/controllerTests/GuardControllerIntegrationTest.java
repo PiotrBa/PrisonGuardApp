@@ -16,12 +16,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -87,5 +89,32 @@ class GuardControllerIntegrationTest {
         String actualResponse = result.getResponse().getContentAsString();
         JSONAssert.assertEquals(expectedResponse, actualResponse, JSONCompareMode.LENIENT);
     }
+
+    @Test
+    void testAddGuard() throws Exception {
+        guardsRepository.deleteAll();
+
+        String inputJson = Files.readString(Path.of("src/test/resources/ExpectedGuardJohn.json"));
+        String expectedJson = Files.readString(Path.of("src/test/resources/ExpectedGuardJohnAfterSave.json"));
+
+        MvcResult result = mockMvc.perform(post("/guard/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(inputJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+
+        String actualResponse = result.getResponse().getContentAsString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actualJsonNode = mapper.readTree(actualResponse);
+        long actualId = actualJsonNode.get("id").asLong();
+
+        JsonNode expectedJsonNode = mapper.readTree(expectedJson);
+        ((ObjectNode) expectedJsonNode).put("id", actualId);
+        JSONAssert.assertEquals(mapper.writeValueAsString(expectedJsonNode), actualResponse, JSONCompareMode.LENIENT
+        );
+    }
+
 
 }

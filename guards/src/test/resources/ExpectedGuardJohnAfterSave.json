@@ -1,0 +1,14 @@
+{
+  "id": 1,
+  "firstName": "John",
+  "lastName": "Doe",
+  "phoneNumber": "123456789",
+  "address": {
+    "firstLine": "123 Main St",
+    "postCode": "12345",
+    "city": "Springfield"
+  },
+  "email": "john.doe@example.com",
+  "grantHighLevelAccess": false,
+  "active": true
+}
