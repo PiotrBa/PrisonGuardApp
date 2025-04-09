@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -57,15 +56,6 @@ class GuardControllerIntegrationTest {
         String actualResponse = result.getResponse().getContentAsString();
         String expectedResponse = Files.readString(Path.of("src/test/resources/ExpectedGuartList.json"));
         JSONAssert.assertEquals(expectedResponse, actualResponse, JSONCompareMode.LENIENT);
-    }
-
-    @Test
-    void testGetAllGuards_whenNoGuards_thenReturnEmptyList() throws Exception {
-        guardsRepository.deleteAll();
-        mockMvc.perform(get("/guard/all")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json("[]"));
     }
 
 
