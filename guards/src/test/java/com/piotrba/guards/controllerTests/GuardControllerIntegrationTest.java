@@ -106,5 +106,28 @@ class GuardControllerIntegrationTest {
         );
     }
 
+    @Test
+    void testUpdateGuard() throws Exception {
+        String originalJson = Files.readString(Path.of("src/test/resources/ExpectedGuardJohn.json"));
+        ObjectMapper mapper = new ObjectMapper();
+        Guard guard = mapper.readValue(originalJson, Guard.class);
+        Guard saved = guardsRepository.save(guard);
+
+        String updatedJson = Files.readString(Path.of("src/test/resources/ExpectedGuardJohnAfterUpdate.json"));
+
+        MvcResult result = mockMvc.perform(post("/guard/update/" + saved.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedJson))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JsonNode expectedJsonNode = mapper.readTree(updatedJson);
+        ((ObjectNode) expectedJsonNode).put("id", saved.getId());
+
+        String expectedResponse = mapper.writeValueAsString(expectedJsonNode);
+        String actualResponse = result.getResponse().getContentAsString();
+
+        JSONAssert.assertEquals(expectedResponse, actualResponse, JSONCompareMode.LENIENT);
+    }
 
 }
