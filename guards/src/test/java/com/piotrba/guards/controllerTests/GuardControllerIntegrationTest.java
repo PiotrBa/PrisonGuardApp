@@ -109,11 +109,12 @@ class GuardControllerIntegrationTest {
     @Test
     void testUpdateGuard() throws Exception {
         String originalJson = Files.readString(Path.of("src/test/resources/ExpectedGuardJohn.json"));
+        String updatedJson = Files.readString(Path.of("src/test/resources/ExpectedGuardJohnAfterUpdate.json"));
+
         ObjectMapper mapper = new ObjectMapper();
         Guard guard = mapper.readValue(originalJson, Guard.class);
         Guard saved = guardsRepository.save(guard);
 
-        String updatedJson = Files.readString(Path.of("src/test/resources/ExpectedGuardJohnAfterUpdate.json"));
 
         MvcResult result = mockMvc.perform(post("/guard/update/" + saved.getId())
                         .contentType(MediaType.APPLICATION_JSON)
