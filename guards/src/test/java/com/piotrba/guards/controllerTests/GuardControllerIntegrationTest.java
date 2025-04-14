@@ -131,4 +131,22 @@ class GuardControllerIntegrationTest {
         JSONAssert.assertEquals(expectedResponse, actualResponse, JSONCompareMode.LENIENT);
     }
 
+    @Test
+    void testDeleteGuard() throws Exception {
+        // In the application, guard is not actually deleted from DB.
+        // Instead, their status is set to inactive.
+
+        String json = Files.readString(Path.of("src/test/resources/ExpectedGuardJohn.json"));
+        ObjectMapper mapper = new ObjectMapper();
+        Guard guard = mapper.readValue(json, Guard.class);
+        Guard saved = guardsRepository.save(guard);
+
+        mockMvc.perform(post("/guard/delete/" + saved.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+
+
+
 }
