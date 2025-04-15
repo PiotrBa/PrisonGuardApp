@@ -146,6 +146,33 @@ class GuardControllerIntegrationTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void testAssignPrisonerToVisitor_successfully() throws Exception {
+        // Save test prisoner
+        String prisonerJson = Files.readString(Path.of("src/test/resources/TestPrisoner.json"));
+        Prisoner prisoner = new ObjectMapper().readValue(prisonerJson, Prisoner.class);
+        prisoner.setId(1L);
+        prisonerRepository.save(prisoner);
+
+        // Save test visitor
+        String visitorJson = Files.readString(Path.of("src/test/resources/TestVisitor.json"));
+        Visitor visitor = new ObjectMapper().readValue(visitorJson, Visitor.class);
+        visitor.setId(2L);
+        visitorRepository.save(visitor);
+
+        // Prepare request
+        String requestJson = Files.readString(Path.of("src/test/resources/ExpectedAssignRequest.json"));
+
+        mockMvc.perform(post("/guard/assign-prisoner")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Prisoner assigned to visitor successfully."));
+    }
+
+
+
+
 
 
 
