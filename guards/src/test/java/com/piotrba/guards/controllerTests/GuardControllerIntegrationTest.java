@@ -3,6 +3,10 @@ package com.piotrba.guards.controllerTests;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.piotrba.guards.client.PrisonerClient;
+import com.piotrba.guards.client.VisitorClient;
+import com.piotrba.guards.dto.prisoner.PrisonerDTO;
+import com.piotrba.guards.dto.visitor.VisitorDTO;
 import com.piotrba.guards.entity.Address;
 import com.piotrba.guards.entity.Guard;
 import com.piotrba.guards.repo.GuardsRepository;
@@ -13,6 +17,7 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -22,6 +27,9 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,6 +43,13 @@ class GuardControllerIntegrationTest {
 
     @Autowired
     private GuardsRepository guardsRepository;
+
+    @MockBean
+    private PrisonerClient prisonerClient;
+
+    @MockBean
+    private VisitorClient visitorClient;
+
 
     @BeforeEach
     void setUp() {
@@ -147,21 +162,25 @@ class GuardControllerIntegrationTest {
     }
 
     @Test
-    void testAssignPrisonerToVisitor_successfully() throws Exception {
-        // Save test prisoner
-        String prisonerJson = Files.readString(Path.of("src/test/resources/TestPrisoner.json"));
-        Prisoner prisoner = new ObjectMapper().readValue(prisonerJson, Prisoner.class);
-        prisoner.setId(1L);
-        prisonerRepository.save(prisoner);
-
-        // Save test visitor
-        String visitorJson = Files.readString(Path.of("src/test/resources/TestVisitor.json"));
-        Visitor visitor = new ObjectMapper().readValue(visitorJson, Visitor.class);
-        visitor.setId(2L);
-        visitorRepository.save(visitor);
-
-        // Prepare request
+    void testAssignPrisonerToVisitor() throws Exception {
         String requestJson = Files.readString(Path.of("src/test/resources/ExpectedAssignRequest.json"));
+
+        PrisonerDTO mockedPrisoner = PrisonerDTO.builder()
+                .id(1L)
+                .firstName("Mock")
+                .lastName("Prisoner")
+                .build();
+
+        VisitorDTO mockedVisitor = VisitorDTO.builder()
+                .id(2L)
+                .firstName("Mock")
+                .lastName("Visitor")
+                .build();
+
+        when(prisonerClient.getPrisonerById(1L)).thenReturn(mockedPrisoner);
+        when(visitorClient.getVisitorById(2L)).thenReturn(mockedVisitor);
+        when(visitorClient.updateVisitor(eq(2L), any(VisitorDTO.class)))
+                .thenReturn(mockedVisitor);
 
         mockMvc.perform(post("/guard/assign-prisoner")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -169,11 +188,5 @@ class GuardControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Prisoner assigned to visitor successfully."));
     }
-
-
-
-
-
-
 
 }
