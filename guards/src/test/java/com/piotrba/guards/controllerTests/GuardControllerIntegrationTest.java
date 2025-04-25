@@ -189,4 +189,44 @@ class GuardControllerIntegrationTest {
                 .andExpect(content().string("Prisoner assigned to visitor successfully."));
     }
 
+    @Test
+    void testGetVisitorsByPrisonerId() throws Exception {
+        Long prisonerId = 1L;
+
+        VisitorDTO visitor1 = VisitorDTO.builder()
+                .id(10L)
+                .firstName("Emily")
+                .lastName("Smith")
+                .prisonerIdNumber(prisonerId)
+                .build();
+
+        VisitorDTO visitor2 = VisitorDTO.builder()
+                .id(11L)
+                .firstName("Michael")
+                .lastName("Johnson")
+                .prisonerIdNumber(prisonerId)
+                .build();
+
+
+        VisitorDTO unrelatedVisitor = VisitorDTO.builder()
+                .id(12L)
+                .firstName("Someone")
+                .lastName("Else")
+                .prisonerIdNumber(99L)
+                .build();
+
+        List<VisitorDTO> allVisitors = List.of(visitor1, visitor2, unrelatedVisitor);
+
+        when(visitorClient.getAllVisitors()).thenReturn(allVisitors);
+
+        MvcResult result = mockMvc.perform(get("/guard/prisoner/{id}/visitors", prisonerId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String expectedJson = Files.readString(Path.of("src/test/resources/ExpectedVisitorsForPrisoner1.json"));
+        String actualJson = result.getResponse().getContentAsString();
+        JSONAssert.assertEquals(expectedJson, actualJson, JSONCompareMode.LENIENT);
+    }
+
 }

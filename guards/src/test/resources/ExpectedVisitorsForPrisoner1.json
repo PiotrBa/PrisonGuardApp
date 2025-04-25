@@ -1,0 +1,22 @@
+[
+  {
+    "id": 10,
+    "firstName": "Emily",
+    "lastName": "Smith",
+    "phoneNumber": null,
+    "email": null,
+    "address": null,
+    "prisonerIdNumber": 1,
+    "relationshipToPrisoner": null
+  },
+  {
+    "id": 11,
+    "firstName": "Michael",
+    "lastName": "Johnson",
+    "phoneNumber": null,
+    "email": null,
+    "address": null,
+    "prisonerIdNumber": 1,
+    "relationshipToPrisoner": null
+  }
+]
