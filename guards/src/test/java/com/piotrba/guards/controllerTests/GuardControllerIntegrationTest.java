@@ -228,5 +228,4 @@ class GuardControllerIntegrationTest {
         String actualJson = result.getResponse().getContentAsString();
         JSONAssert.assertEquals(expectedJson, actualJson, JSONCompareMode.LENIENT);
     }
-
 }
