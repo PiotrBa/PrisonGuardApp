@@ -125,7 +125,6 @@ public class GuardService {
         return assignedVisitors;
     }
 
-
     @Transactional
     public void deleteGuard(Long id) {
         logger.info("Attempting to delete guard with ID: {}", id);
@@ -138,6 +137,4 @@ public class GuardService {
         existingGuard.setActive(false);
         logger.info("Guard deactivated successfully: {}", existingGuard);
     }
-
-
 }
