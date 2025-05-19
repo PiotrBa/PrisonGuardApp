@@ -21,6 +21,4 @@ public class VisitorDTO {
     private Long prisonerIdNumber;
     @Enumerated(EnumType.STRING)
     private RelationshipToPrisonerDTO relationshipToPrisoner;
-
 }
-
